@@ -304,6 +304,22 @@ typedef CGPoint KIFDisplacement;
             return KIFTestStepResultWait;
         }
 
+        // Need to convert the element's accessibilityFrame in the coordinate-space of a window with an identity transform. This allows for discovery of a tappable point in an UIAlertView button when the current orientation is not portrait, since UIAlertViews are presented in a separate window with an applied CGAffineTransform based on device rotation.
+        UIWindow *identityTransformWindow = nil;
+        if (CGAffineTransformIsIdentity(view.window.transform)) {
+            identityTransformWindow = view.window;
+        }
+        else {
+            for (UIWindow *window in [[[UIApplication sharedApplication] windows] reverseObjectEnumerator]) {
+                if (CGAffineTransformIsIdentity(window.transform)){
+                    identityTransformWindow = window;
+                    break;
+                }
+            }
+        }
+
+        KIFTestWaitCondition(identityTransformWindow, error, @"Failed to find window with level UIWindowLevelNormal");
+
         // If the accessibilityFrame is not set, fallback to the view frame.
         CGRect elementFrame;
         if (CGRectEqualToRect(CGRectZero, element.accessibilityFrame)) {
@@ -312,6 +328,7 @@ typedef CGPoint KIFDisplacement;
         } else {
             elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
         }
+
         CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
 
         // This is mostly redundant of the test in _accessibilityElementWithLabel:
