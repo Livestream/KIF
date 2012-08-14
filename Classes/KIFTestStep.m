@@ -385,9 +385,11 @@ typedef CGPoint KIFDisplacement;
             
             if (![self _enterCharacter:characterString]) {
                 // Attempt to cheat if we couldn't find the character
-                if ([view isKindOfClass:[UITextField class]] || [view isKindOfClass:[UITextView class]]) {
+                if ([view respondsToSelector:@selector(setText:)] && [view respondsToSelector:@selector(text)]) {
                     NSLog(@"KIF: Unable to find keyboard key for %@. Inserting manually.", characterString);
-                    [(UITextField *)view setText:[[(UITextField *)view text] stringByAppendingString:characterString]];
+                    NSString *text = [view performSelector:@selector(text)];
+                    text = [text stringByAppendingString:characterString];
+                    [view performSelector:@selector(setText:) withObject:text];
                 } else {
                     KIFTestCondition(NO, error, @"Failed to find key for character \"%@\"", characterString);
                 }
