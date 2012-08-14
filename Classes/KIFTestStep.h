@@ -449,6 +449,7 @@ typedef enum {
  @param label Accessibility label of the text field.
  @param traits The accessibility traits of the element to type into. Elements that do not include at least these traits are ignored.
  @param expectedResult What the text value should be after entry, including any formatting done by the field.
+ @result A configured test step.
  */
 + (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits expectedResult:(NSString *)expectedResult;
 
@@ -459,5 +460,17 @@ typedef enum {
  @param label Accessibility label of the text field.
  */
 + (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label;
+
+/*!
+ @method stepToEditRowInTableViewWithAccessibilityLabel:atIndexPath:editingStyle:
+ @abstract A step that edit a tableview cell at a given indexPath.
+ @discussion This step will get the view with the specified label, and if of type UITableview, will edit the UITableviewCell at indexPath with specified editingStyle
+ @param Accessibility label of the table view
+ @param IndexPath of the row being edited
+ @param Editing style of the edit being performed
+ @result A configured test step.
+ */
++ (id)stepToEditRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath editingStyle:(UITableViewCellEditingStyle)editingStyle;
+
 
 @end

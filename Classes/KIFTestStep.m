@@ -1011,7 +1011,7 @@ typedef CGPoint KIFDisplacement;
     }
 }
 
-+ (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits expectedResult:(NSString *)expectedResult
++ (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label traits:(UIAccessibilityTraits)traits expectedResult:(NSString *)expectedResult;
 {
     const NSTimeInterval keystrokeDelay = 0.05f;
     
@@ -1071,9 +1071,40 @@ typedef CGPoint KIFDisplacement;
     }];
 }
 
-+ (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label
++ (id)stepToClearTextFromViewWithAccessibilityLabel:(NSString *)label;
 {
     return [self stepToClearTextFromViewWithAccessibilityLabel:label traits:UIAccessibilityTraitNone expectedResult:nil];
+}
+
+
++ (id)stepToEditRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath editingStyle:(UITableViewCellEditingStyle)editingStyle;
+{
+    NSString *description = [NSString stringWithFormat:@"Step to edit row %d in tableView with label %@", [indexPath row], tableViewLabel];
+    return [KIFTestStep stepWithDescription:description executionBlock:^(KIFTestStep *step, NSError **error) {
+        UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:tableViewLabel];
+        KIFTestCondition(element, error, @"View with label %@ not found", tableViewLabel);
+        UITableView *tableView = (UITableView*)[UIAccessibilityElement viewContainingAccessibilityElement:element];
+        
+        KIFTestCondition([tableView isKindOfClass:[UITableView class]], error, @"Specified view is not a UITableView");
+        
+        KIFTestCondition(tableView, error, @"Table view with label %@ not found", tableViewLabel);
+        
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        if (!cell) {
+            KIFTestCondition([indexPath section] < [tableView numberOfSections], error, @"Section %d is not found in '%@' table view", [indexPath section], tableViewLabel);
+            KIFTestCondition([indexPath row] < [tableView numberOfRowsInSection:[indexPath section]], error, @"Row %d is not found in section %d of '%@' table view", [indexPath row], [indexPath section], tableViewLabel);
+            [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+            [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
+            cell = [tableView cellForRowAtIndexPath:indexPath];
+        }
+        KIFTestCondition(cell, error, @"Table view cell at index path %@ not found", indexPath);
+        
+        // edit row
+        KIFTestCondition([tableView.dataSource tableView:tableView canEditRowAtIndexPath:indexPath], error, @"Row %d can't edit in section %d of '%@' table view", [indexPath row], [indexPath section], tableViewLabel);
+        [tableView.dataSource tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
+        
+        return KIFTestStepResultSuccess;
+    }];
 }
 
 @end
