@@ -472,5 +472,16 @@ typedef enum {
  */
 + (id)stepToEditRowInTableViewWithAccessibilityLabel:(NSString*)tableViewLabel atIndexPath:(NSIndexPath *)indexPath editingStyle:(UITableViewCellEditingStyle)editingStyle;
 
+/*!
+ @method stepToSelectPickerViewWithAccessibilityLabel:rowWithTitle:inColumn
+ @abstract A step that select a row of a UIPickerView at a given column.
+ @discussion This step will get the view with the specified label, and if of type UIPickerView, will select row with specified title at the specified column
+ @param Accessibility label of the picker view
+ @param title of the row to tap
+ @param column to tap
+ @result A configured test step.
+ */
++ (id)stepToSelectPickerViewWithAccessibilityLabel:(NSString*)pickerViewLabel rowWithTitle:(NSString *)title inColumn:(NSUInteger)column;
+
 
 @end
