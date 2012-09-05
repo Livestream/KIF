@@ -1031,13 +1031,17 @@ typedef CGPoint KIFDisplacement;
         KIFTestWaitCondition(view, error, @"Cannot find view with accessibility label \"%@\"", label);
         
         CGRect elementFrame = [view.window convertRect:element.accessibilityFrame toView:view];
-        CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
         
-        // This is mostly redundant of the test in _accessibilityElementWithLabel:
-        KIFTestCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
-        [view tapAtPoint:tappablePointInElement];
-        
-        KIFTestWaitCondition([view isDescendantOfFirstResponder], error, @"Failed to make the view with accessibility label \"%@\" the first responder. First responder is %@", label, [[[UIApplication sharedApplication] keyWindow] firstResponder]);
+        //make the view the first responder
+        if (![view isFirstResponder]) {
+            CGPoint tappablePointInElement = [view tappablePointInRect:elementFrame];
+            
+            // This is mostly redundant of the test in _accessibilityElementWithLabel:
+            KIFTestCondition(!isnan(tappablePointInElement.x), error, @"The element with accessibility label %@ is not tappable", label);
+            [view tapAtPoint:tappablePointInElement];
+            
+            KIFTestWaitCondition([view isDescendantOfFirstResponder], error, @"Failed to make the view with accessibility label \"%@\" the first responder. First responder is %@", label, [[[UIApplication sharedApplication] keyWindow] firstResponder]);
+        }
         
         // Wait for the keyboard
         CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.5, false);
