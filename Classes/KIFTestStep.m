@@ -1187,4 +1187,21 @@ typedef CGPoint KIFDisplacement;
     }];
 }
 
++ (id)stepToSetDateToDatePickerWithAccessibilityLabel:(NSString*)datePickerLabel date:(NSDate*)date
+{
+    NSString *desc = [NSString stringWithFormat:@"Set date the \"%@\" to the date picker", [date description]];
+    return [KIFTestStep stepWithDescription:desc executionBlock:^(KIFTestStep *step, NSError **error) {
+        // Find the date picker
+        UIAccessibilityElement *element = [[UIApplication sharedApplication] accessibilityElementWithLabel:datePickerLabel];
+        KIFTestCondition(element, error, @"DatePicker with label \"%@\" not found", datePickerLabel);
+        KIFTestCondition([element isKindOfClass:[UIDatePicker class]], error, @"Specified view is not a UIDatePicker");
+        UIDatePicker *datePicker = (UIDatePicker*)element;
+        
+        [datePicker setDate:date animated:YES];
+        [datePicker sendActionsForControlEvents:UIControlEventValueChanged];
+        
+        return KIFTestStepResultSuccess;
+    }];
+}
+
 @end

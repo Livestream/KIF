@@ -483,5 +483,15 @@ typedef enum {
  */
 + (id)stepToSelectPickerViewWithAccessibilityLabel:(NSString*)pickerViewLabel rowWithTitle:(NSString *)title inColumn:(NSUInteger)column;
 
+/*!
+ @method stepToSetDateToDatePickerWithAccessibilityLabel:date:
+ @abstract A step that set date to UIDatePicker
+ @discussion This step will get the view with the specified label, and if of type UIPickerDate, will set date at the UIDatePicker
+ @param Accessibility label of the picker date
+ @param date
+ @result A configured test step.
+ */
++ (id)stepToSetDateToDatePickerWithAccessibilityLabel:(NSString*)datePickerLabel date:(NSDate*)date;
+
 
 @end
